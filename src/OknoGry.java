@@ -1,50 +1,136 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
-public class OknoGry {
+public class OknoGry extends JPanel{
 
     JFrame frame;
     JLabel player;
     Timer timer;
-    int playerSpeed = 10; // Ustaw prędkość postaci
+    int playerSpeed = 10;
     int deltaX = 0;
     int deltaY = 0;
+    JProgressBar progressBar;
+    int progressBarMaxValue = 100;
+    int progressBarCurrentValue = progressBarMaxValue;
 
     OknoGry() {
-
         frame = new JFrame("PŁETWONUREK MATEMATYK");
-        frame.setLayout(new FlowLayout());
-        frame.setTitle("PŁETWONUREK MATEMATYK");
         frame.setLayout(null);
         frame.setSize(1024, 768);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().setBackground(Color.white);
+
+        JButton close = new JButton("Wyjście");
+        close.setFont(new Font("Arial", Font.BOLD, 20));
+        close.setBounds(870, 640, 120, 60);
+        close.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                OknoMenu oknoMenu = new OknoMenu();
+                oknoMenu.pokazOknoMenu();
+            }
+        });
 
         ImageIcon gracz = new ImageIcon("nurek.png");
 
         player = new JLabel("", gracz, JLabel.CENTER);
         player.setBounds(100, 100, 120, 146);
         player.setOpaque(true);
-
+        player.setBackground(new Color(0, 168, 190));
         frame.add(player);
+
+        frame.add(close);
+
+        progressBar = new JProgressBar(0, progressBarMaxValue);
+        progressBar.setBounds(10, 10, 200, 20);
+        progressBar.setValue(progressBarMaxValue);
+        progressBar.setForeground(Color.GREEN);
+        frame.add(progressBar);
 
         setupKeyBindings();
 
-        timer = new Timer(16, new ActionListener() { // Timer z aktualizacją co 16 ms (ok. 60 FPS)
+
+        timer = new Timer(16, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Aktualizuj położenie postaci
                 updatePlayerPosition();
+                updateProgressBar();
+
+                if (progressBarCurrentValue <= 0) {
+                    showGameOverDialog();
+                    timer.stop();
+                }
             }
         });
         timer.start();
 
-        frame.setVisible(true);
+        Timer progressBarTimer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                progressBarCurrentValue -= 10;
+                progressBar.setValue(progressBarCurrentValue);
+
+                if (progressBarCurrentValue <= 0) {
+                    ((Timer) e.getSource()).stop();
+                }
+            }
+        });
+        progressBarTimer.setInitialDelay(0);
+        progressBarTimer.start();
+    }
+
+
+
+    private void updatePlayerPosition() {
+        int newX = player.getX() + deltaX;
+        int newY = player.getY() + deltaY;
+
+        if (newX < 0) {
+            newX = 0;
+        }
+
+        if (newY < 0) {
+            newY = 0;
+        }
+
+        if (newX + player.getWidth() > frame.getWidth()) {
+            newX = frame.getWidth() - player.getWidth();
+        }
+
+        if (newY + player.getHeight() > frame.getHeight()) {
+            newY = frame.getHeight() - player.getHeight();
+        }
+
+        player.setLocation(newX, newY);
+    }
+
+    private void updateProgressBar() {
+        progressBar.setValue(progressBarCurrentValue);
+    }
+
+    private void showGameOverDialog() {
+        Object[] options = {"WRÓĆ DO MENU"};
+        int choice = JOptionPane.showOptionDialog(frame,
+                "NIESTETY PRZEGRAŁEŚ :(",
+                "KONIEC GRY",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                options,
+                options[0]);
+
+        if (choice == 0) {
+            frame.dispose();
+            OknoMenu oknoMenu = new OknoMenu();
+            oknoMenu.pokazOknoMenu();
+        }
     }
 
     private void setupKeyBindings() {
@@ -110,36 +196,19 @@ public class OknoGry {
                 deltaX = 0;
             }
         });
+
+        inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "escapePressed");
+        actionMap.put("escapePressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                OknoMenu oknoMenu = new OknoMenu();
+                oknoMenu.pokazOknoMenu();
+            }
+        });
     }
 
-    private void updatePlayerPosition() {
-        // Aktualizuj położenie postaci
-        int newX = player.getX() + deltaX;
-        int newY = player.getY() + deltaY;
-
-        // Dodaj logikę kolizji z lewą krawędzią okna
-        if (newX < 0) {
-            newX = 0;
-        }
-
-        // Dodaj logikę kolizji z górną krawędzią okna
-        if (newY < 0) {
-            newY = 0;
-        }
-
-        // Dodaj logikę kolizji z prawą krawędzią okna
-        if (newX + player.getWidth() > frame.getWidth()) {
-            newX = frame.getWidth() - player.getWidth();
-        }
-
-        // Dodaj logikę kolizji z dolną krawędzią okna
-        if (newY + player.getHeight() > frame.getHeight()) {
-            newY = frame.getHeight() - player.getHeight();
-        }
-
-        // Ustaw nowe położenie postaci
-        player.setLocation(newX, newY);
+    public void pokazOknoGry() {
+        frame.setVisible(true);
     }
-
-
 }

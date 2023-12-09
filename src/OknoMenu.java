@@ -2,69 +2,64 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 public class OknoMenu extends JFrame {
-    public OknoMenu() {
-        this.setLayout(new FlowLayout());
-        this.setTitle("PŁETWONUREK MATEMATYK");
-        this.setSize(1024, 768);
-        this.setResizable(false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JButton nowaGra = new JButton("NOWA GRA");
-        nowaGra.setFont(new Font("Arial", Font.BOLD, 20));
-        nowaGra.setBounds(590, 325, 175, 80);
-        getContentPane().setLayout(null);
-        getContentPane().add(nowaGra);
-        nowaGra.addActionListener(new ActionListener() {
+    public OknoMenu() {
+        setTitle("PŁETWONUREK MATEMATYK");
+        setSize(1024, 768);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JButton newGame = new JButton("NOWA GRA");
+        newGame.setFont(new Font("Arial", Font.BOLD, 20));
+        newGame.setBounds(590, 325, 175, 80);
+        newGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 OknoGry oknoGry = new OknoGry();
-
+                oknoGry.pokazOknoGry(); // Włączenie okna gry
+                dispose(); // Zamknięcie okna menu
             }
         });
 
-        JButton sredni = new JButton("ŚREDNI");
-        sredni.setFont(new Font("Arial", Font.BOLD, 20));
-        sredni.setBounds(590, 425, 175, 80);
-        getContentPane().setLayout(null);
-        getContentPane().add(sredni);
+        JButton medium = new JButton("ŚREDNI");
+        medium.setFont(new Font("Arial", Font.BOLD, 20));
+        medium.setBounds(590, 425, 175, 80);
 
-        JButton latwy = new JButton("ŁATWY");
-        latwy.setFont(new Font("Arial", Font.BOLD, 20));
-        latwy.setBounds(390, 425, 175, 80);
-        getContentPane().setLayout(null);
-        getContentPane().add(latwy);
+        JButton easy = new JButton("ŁATWY");
+        easy.setFont(new Font("Arial", Font.BOLD, 20));
+        easy.setBounds(390, 425, 175, 80);
 
-        JButton trudny = new JButton("TRUDNY");
-        trudny.setFont(new Font("Arial", Font.BOLD, 20));
-        trudny.setBounds(790, 425, 175, 80);
-        getContentPane().setLayout(null);
-        getContentPane().add(trudny);
+        JButton hard = new JButton("TRUDNY");
+        hard.setFont(new Font("Arial", Font.BOLD, 20));
+        hard.setBounds(790, 425, 175, 80);
 
-        JButton wyjscie = new JButton("WYJDŹ Z GRY");
-        wyjscie.setFont(new Font("Arial", Font.BOLD, 20));
-        wyjscie.setBounds(590, 525, 175, 80);
-        getContentPane().setLayout(null);
-        getContentPane().add(wyjscie);
-        wyjscie.addActionListener(new ActionListener() {
+        JButton exit = new JButton("WYJDŹ Z GRY");
+        exit.setFont(new Font("Arial", Font.BOLD, 20));
+        exit.setBounds(590, 525, 175, 80);
+        exit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int odpowiedz = JOptionPane.showConfirmDialog(null, "Czy chcesz wyjść z gry?", "Potwierdzenie", JOptionPane.YES_NO_OPTION);
-                if (odpowiedz == JOptionPane.YES_OPTION) {
-                    System.exit(0);
-                }
+                System.exit(0);
             }
         });
 
         ImageIcon tlo = new ImageIcon("menu_gry.png");
         JLabel background = new JLabel("", tlo, JLabel.CENTER);
         background.setBounds(0, 0, 1024, 768);
+
+        setLayout(null);
+        add(newGame);
+        add(medium);
+        add(easy);
+        add(hard);
+        add(exit);
         add(background);
     }
-    public void pokazMenu(){setVisible(true);}
+
+    public void pokazOknoMenu() {
+        setVisible(true);
+    }
+
 }
