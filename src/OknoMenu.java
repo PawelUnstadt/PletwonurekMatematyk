@@ -10,7 +10,8 @@ public class OknoMenu extends JFrame {
         setSize(1024, 768);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        ImageIcon logo = new ImageIcon("nurek_z_tlem.png");
+        setIconImage(logo.getImage());
         JButton newGame = new JButton("NOWA GRA");
         newGame.setFont(new Font("Arial", Font.BOLD, 20));
         newGame.setBounds(590, 325, 175, 80);
@@ -30,6 +31,7 @@ public class OknoMenu extends JFrame {
         JButton easy = new JButton("ŁATWY");
         easy.setFont(new Font("Arial", Font.BOLD, 20));
         easy.setBounds(390, 425, 175, 80);
+
 
         JButton hard = new JButton("TRUDNY");
         hard.setFont(new Font("Arial", Font.BOLD, 20));

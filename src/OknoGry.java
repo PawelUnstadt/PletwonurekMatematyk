@@ -1,15 +1,27 @@
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.lang.Math.*;
 
-public class OknoGry extends JPanel{
+
+public class OknoGry extends JPanel implements ActionListener{
 
     JFrame frame;
     JLabel player;
+    Bubble bubble1;
+    Bubble bubble2;
+    Bubble bubble3;
+    Bubble correctAnswerBubble;
+    JLabel QuestionPanel;
+    JLabel PointCounter;
+    public int easyLevel;
+    public int mediumLevel;
+    public int hardLevel;
+    int points = 0;
+    Question currentQuestion;
     Timer timer;
     int playerSpeed = 10;
     int deltaX = 0;
@@ -18,35 +30,22 @@ public class OknoGry extends JPanel{
     int progressBarMaxValue = 100;
     int progressBarCurrentValue = progressBarMaxValue;
 
+
     OknoGry() {
         frame = new JFrame("PŁETWONUREK MATEMATYK");
-        frame.setLayout(null);
         frame.setSize(1024, 768);
         frame.setResizable(false);
+        frame.setLayout(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().setBackground(Color.white);
+        frame.getContentPane().setBackground(new Color(0, 168, 190));
+        frame.add(this);
+        frame.setVisible(true);
 
-        JButton close = new JButton("Wyjście");
-        close.setFont(new Font("Arial", Font.BOLD, 20));
-        close.setBounds(870, 640, 120, 60);
-        close.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                OknoMenu oknoMenu = new OknoMenu();
-                oknoMenu.pokazOknoMenu();
-            }
-        });
-
-        ImageIcon gracz = new ImageIcon("nurek.png");
-
-        player = new JLabel("", gracz, JLabel.CENTER);
-        player.setBounds(100, 100, 120, 146);
+        ImageIcon play = new ImageIcon("nurek.png");
+        player = new JLabel("", play, JLabel.CENTER);
+        player.setBounds(100, 375, 120, 120);
         player.setOpaque(true);
-        player.setBackground(new Color(0, 168, 190));
         frame.add(player);
-
-        frame.add(close);
 
         progressBar = new JProgressBar(0, progressBarMaxValue);
         progressBar.setBounds(10, 10, 200, 20);
@@ -54,28 +53,39 @@ public class OknoGry extends JPanel{
         progressBar.setForeground(Color.GREEN);
         frame.add(progressBar);
 
-        setupKeyBindings();
+        bubble1 = new Bubble();
+        bubble1.setBounds(1150,375,120,120);
+        frame.add(bubble1);
+
+        bubble2 = new Bubble();
+        bubble2.setBounds(1150,175,120,120);
+        frame.add(bubble2);
+
+        bubble3 = new Bubble();
+        bubble3.setBounds(1150,575,120,120);
+        frame.add(bubble3);
+
+        QuestionPanel = new JLabel();
+        QuestionPanel.setBounds(400,0,250,50);
+        QuestionPanel.setFont(new Font("Arial",Font.BOLD,50));
+        QuestionPanel.setForeground(Color.white);
+        frame.add(QuestionPanel);
+
+        PointCounter = new JLabel();
+        PointCounter.setBounds(810,0,200,50);
+        PointCounter.setFont(new Font("Arial",Font.BOLD,38));
+        PointCounter.setText("WYNIK:" + points);
+        PointCounter.setForeground(Color.white);
+        frame.add(PointCounter);
 
 
-        timer = new Timer(16, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updatePlayerPosition();
-                updateProgressBar();
-
-                if (progressBarCurrentValue <= 0) {
-                    showGameOverDialog();
-                    timer.stop();
-                }
-            }
-        });
+        timer = new Timer(16, this);
         timer.start();
 
         Timer progressBarTimer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 progressBarCurrentValue -= 10;
-                progressBar.setValue(progressBarCurrentValue);
 
                 if (progressBarCurrentValue <= 0) {
                     ((Timer) e.getSource()).stop();
@@ -84,11 +94,70 @@ public class OknoGry extends JPanel{
         });
         progressBarTimer.setInitialDelay(0);
         progressBarTimer.start();
+        setupKeyBindings();
+    }
+
+    public void pokazOknoGry(){
+        frame.setVisible(true);
+    }
+    private void showQuestion() {
+        if (currentQuestion == null) {
+            currentQuestion = new Question();
+            String generatedQuestion = currentQuestion.generateQuestion();
+            QuestionPanel.setText(generatedQuestion + " = ?");
+
+            // Ustaw poprawną odpowiedź w losowym bąblu
+            int correctAnswerBubbleIndex = (int) (Math.random() * 3) + 1;
+            switch (correctAnswerBubbleIndex) {
+                case 1:
+                    bubble1.setAnswer(currentQuestion.generateAnswer());
+                    correctAnswerBubble = bubble1;
+                    break;
+                case 2:
+                    bubble2.setAnswer(currentQuestion.generateAnswer());
+                    correctAnswerBubble = bubble2;
+                    break;
+                case 3:
+                    bubble3.setAnswer(currentQuestion.generateAnswer());
+                    correctAnswerBubble = bubble3;
+                    break;
+            }
+
+            // Ustaw dwie błędne odpowiedzi w pozostałych bąblach
+            int incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
+            int incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
+
+            while (incorrectAnswer1 == incorrectAnswer2 || incorrectAnswer1 == Integer.parseInt(currentQuestion.generateAnswer()) || incorrectAnswer2 == Integer.parseInt(currentQuestion.generateAnswer())) {
+                // Unikaj powtarzających się błędnych odpowiedzi
+                incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
+                incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
+            }
+
+            switch (correctAnswerBubbleIndex) {
+                case 1:
+                    bubble2.setAnswer(String.valueOf(incorrectAnswer1));
+                    bubble3.setAnswer(String.valueOf(incorrectAnswer2));
+                    break;
+                case 2:
+                    bubble1.setAnswer(String.valueOf(incorrectAnswer1));
+                    bubble3.setAnswer(String.valueOf(incorrectAnswer2));
+                    break;
+                case 3:
+                    bubble1.setAnswer(String.valueOf(incorrectAnswer1));
+                    bubble2.setAnswer(String.valueOf(incorrectAnswer2));
+                    break;
+            }
+        }
+    }
+
+    private int generateIncorrectAnswer(int correctAnswer) {
+        Random random = new Random();
+        int randomize = random.nextInt(correctAnswer) + 1;           // Zakres generowanych błędnych odpowiedzi
+        return correctAnswer + randomize;
     }
 
 
-
-    private void updatePlayerPosition() {
+    private void updatePlayerPosition() {                           //Metoda aktualizuje pozycję gracza na planszy
         int newX = player.getX() + deltaX;
         int newY = player.getY() + deltaY;
 
@@ -110,6 +179,41 @@ public class OknoGry extends JPanel{
 
         player.setLocation(newX, newY);
     }
+
+    private void moveBubbles() {
+        bubble1.setLocation(bubble1.getX() - 7, bubble1.getY());
+        bubble2.setLocation(bubble2.getX() - 7, bubble2.getY());
+        bubble3.setLocation(bubble3.getX() - 7, bubble3.getY());
+    }
+
+    private void collisionDetection() {
+        Rectangle playerBounds = player.getBounds();
+
+        if (playerBounds.intersects(bubble1.getBounds())) {
+            collisionCheck(bubble1);
+        }
+
+        if (playerBounds.intersects(bubble2.getBounds())) {
+            collisionCheck(bubble2);
+        }
+
+        if (playerBounds.intersects(bubble3.getBounds())) {
+            collisionCheck(bubble3);
+        }
+    }
+
+    private void collisionCheck(Bubble bubble){
+        if (bubble == correctAnswerBubble) {
+            nextStage();
+            progressBarCurrentValue = 100;
+            points++;
+            PointCounter.setText("WYNIK: " + points);
+        } else {
+            nextStage();
+            progressBarCurrentValue -= 1;
+        }
+    }
+
 
     private void updateProgressBar() {
         progressBar.setValue(progressBarCurrentValue);
@@ -133,6 +237,76 @@ public class OknoGry extends JPanel{
         }
     }
 
+    private void showGameWonDialog(){
+            Object[] options = {"WRÓĆ DO MENU"};
+            int choice = JOptionPane.showOptionDialog(frame,
+                    "GRATULACJE, WYGRAŁEŚ :)",
+                    "KONIEC GRY",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+
+            if (choice == 0) {
+                frame.dispose();
+                OknoMenu oknoMenu = new OknoMenu();
+                oknoMenu.pokazOknoMenu();
+            }
+    }
+    private void nextStage(){
+        currentQuestion = new Question();
+        String generatedQuestion = currentQuestion.generateQuestion();
+        QuestionPanel.setText(generatedQuestion + " = ?");
+
+        // Ustaw poprawną odpowiedź w losowym bąblu
+        int correctAnswerBubbleIndex = (int) (Math.random() * 3) + 1;
+        switch (correctAnswerBubbleIndex) {
+            case 1:
+                bubble1.setAnswer(currentQuestion.generateAnswer());
+                correctAnswerBubble = bubble1;
+                break;
+            case 2:
+                bubble2.setAnswer(currentQuestion.generateAnswer());
+                correctAnswerBubble = bubble2;
+                break;
+            case 3:
+                bubble3.setAnswer(currentQuestion.generateAnswer());
+                correctAnswerBubble = bubble3;
+                break;
+        }
+
+        // Ustawienie błędnych odpowiedzi w pozostałych bąblach
+        int incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
+        int incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
+
+        while (incorrectAnswer1 == incorrectAnswer2 || incorrectAnswer1 == Integer.parseInt(currentQuestion.generateAnswer()) || incorrectAnswer2 == Integer.parseInt(currentQuestion.generateAnswer())) {
+            // Pętla while, która nie pozwala na wylosowanie dwóch tych samych błędnych odpowiedzi
+            incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
+            incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
+        }
+
+        switch (correctAnswerBubbleIndex) {
+            case 1:
+                bubble2.setAnswer(String.valueOf(incorrectAnswer1));
+                bubble3.setAnswer(String.valueOf(incorrectAnswer2));
+                break;
+            case 2:
+                bubble1.setAnswer(String.valueOf(incorrectAnswer1));
+                bubble3.setAnswer(String.valueOf(incorrectAnswer2));
+                break;
+            case 3:
+                bubble1.setAnswer(String.valueOf(incorrectAnswer1));
+                bubble2.setAnswer(String.valueOf(incorrectAnswer2));
+                break;
+        }
+
+        // Ustawienie bąbli na swoje początkowe położenie
+
+        bubble1.setLocation(1000, 375);
+        bubble2.setLocation(1000, 175);
+        bubble3.setLocation(1000, 575);
+    }
     private void setupKeyBindings() {
         InputMap inputMap = player.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = player.getActionMap();
@@ -196,19 +370,23 @@ public class OknoGry extends JPanel{
                 deltaX = 0;
             }
         });
-
-        inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "escapePressed");
-        actionMap.put("escapePressed", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                OknoMenu oknoMenu = new OknoMenu();
-                oknoMenu.pokazOknoMenu();
-            }
-        });
     }
 
-    public void pokazOknoGry() {
-        frame.setVisible(true);
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        updatePlayerPosition();
+        updateProgressBar();
+        showQuestion();
+        moveBubbles();
+        collisionDetection();
+
+        if (progressBarCurrentValue <= 0) {
+            showGameOverDialog();
+            timer.stop();
+        }
+        if(points == 20){
+            showGameWonDialog();
+            timer.stop();
+        }
     }
 }

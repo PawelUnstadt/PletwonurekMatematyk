@@ -1,29 +1,39 @@
-public class Bubble {
-    private int x;
-    private int y;
-    int bubbleSpeed = 15;
-    private String answer;
+import javax.swing.*;
+import java.awt.*;
 
-    public Bubble(int x, int height, int bubbleSpeed, String answer) {
-        this.x = x;
-        this.y = y;
-        this.bubbleSpeed = bubbleSpeed;
+public class Bubble extends JPanel {
+
+    String answer;
+    ImageIcon bubbleImage;
+    public Bubble() {
+        setPreferredSize(new Dimension(120, 120));
+        setBackground(new Color(0, 168, 190));
+        bubbleImage = new ImageIcon("bubble.png");
+    }
+
+    public void setAnswer(String answer) {
         this.answer = answer;
     }
 
-    public int getX(){
-        return x;
-    }
 
-    public int getY(){
-        return y;
-    }
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (answer != null) {
+            int diameter = Math.min(getWidth(), getHeight());       //Rysowanie kształtu bąbla
+            int x = (getWidth() - diameter) / 2;
+            int y = (getHeight() - diameter) / 2;
 
-    public void move(){
-        x -= bubbleSpeed;
-    }
-
-    public String getAnswer(){
-        return answer;
+            // Wyświetlanie odpowiedzi w środku bąbla
+            Font font = new Font("Arial", Font.BOLD, 40);
+            g.setFont(font);
+            g.setColor(Color.BLACK);
+            FontMetrics fm = g.getFontMetrics();
+            int textWidth = fm.stringWidth(answer);
+            int textHeight = fm.getHeight();
+            int textX = (getWidth() - textWidth) / 2;
+            int textY = (getHeight() - textHeight) / 2 + fm.getAscent();
+            g.drawOval(x,y,diameter,diameter);
+            g.drawString(answer, textX, textY);
+        }
     }
 }
