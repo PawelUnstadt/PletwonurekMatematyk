@@ -11,6 +11,7 @@ public class OknoGry extends JPanel implements ActionListener{
 
     JFrame frame;
     JLabel player;
+    JButton close;
     Bubble bubble1;
     Bubble bubble2;
     Bubble bubble3;
@@ -42,6 +43,20 @@ public class OknoGry extends JPanel implements ActionListener{
         frame.getContentPane().setBackground(new Color(0, 168, 190));
         frame.add(this);
         frame.setVisible(true);
+
+        JButton close = new JButton("Wyjście");
+        close.setFont(new Font("Arial", Font.BOLD, 20));
+        close.setBounds(0, 670, 120, 60);
+        close.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                OknoMenu oknoMenu = new OknoMenu();
+                oknoMenu.pokazOknoMenu();
+            }
+        });
+
+        frame.add(close);
 
         ImageIcon play = new ImageIcon("nurek.png");
         player = new JLabel("", play, JLabel.CENTER);
