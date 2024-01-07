@@ -1,6 +1,6 @@
 import java.util.*;
 public class Question {
-    int questionNumber;
+    int q;
     Random rng = new Random();
     HashMap <Integer, String> questions = new HashMap<>();
     HashMap <Integer, String> answers = new HashMap<>();
@@ -128,10 +128,10 @@ public class Question {
     }
 
     String generateQuestion(){                          //Funkcja losująca pytanie
-        questionNumber = rng.nextInt(40-1)+1;
-        return questions.get(questionNumber);
+        q = rng.nextInt(40-1)+1;
+        return questions.get(q);
     }
     String generateAnswer(){
-        return answers.get(questionNumber);
+        return answers.get(q);
     }
 }
