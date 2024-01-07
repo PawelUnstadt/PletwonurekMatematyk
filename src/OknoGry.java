@@ -18,12 +18,8 @@ public class OknoGry extends JPanel implements ActionListener{
     Bubble correctAnswerBubble;
     JLabel QuestionPanel;
     JLabel PointCounter;
-    public int easyLevel;
-    public int mediumLevel;
-    public int hardLevel;
     int points = 0;
     Question currentQuestion;
-    private Set<Question> usedQuestion = new HashSet<>();
     Timer timer;
     int playerSpeed = 10;
     int deltaX = 0;
@@ -292,12 +288,12 @@ public class OknoGry extends JPanel implements ActionListener{
                 break;
         }
 
-        // Ustawienie błędnych odpowiedzi w pozostałych bąblach
-        int incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
-        int incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
 
+        int incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));         // Ustawienie błędnych odpowiedzi w pozostałych bąblach
+        int incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
+                                                                                                                    // Pętla while, która nie pozwala na wylosowanie dwóch tych samych błędnych odpowiedzi
         while (incorrectAnswer1 == incorrectAnswer2 || incorrectAnswer1 == Integer.parseInt(currentQuestion.generateAnswer()) || incorrectAnswer2 == Integer.parseInt(currentQuestion.generateAnswer())) {
-            // Pętla while, która nie pozwala na wylosowanie dwóch tych samych błędnych odpowiedzi
+
             incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
             incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
         }
@@ -317,9 +313,9 @@ public class OknoGry extends JPanel implements ActionListener{
                 break;
         }
 
-        // Ustawienie bąbli na swoje początkowe położenie
 
-        bubble1.setLocation(1000, 375);
+
+        bubble1.setLocation(1000, 375);                                 // Ustawienie bąbli na swoje początkowe położenie
         bubble2.setLocation(1000, 175);
         bubble3.setLocation(1000, 575);
     }
