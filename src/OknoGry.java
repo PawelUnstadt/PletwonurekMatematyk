@@ -22,6 +22,7 @@ public class OknoGry extends JPanel implements ActionListener{
     public int hardLevel;
     int points = 0;
     Question currentQuestion;
+    private Set<Question> usedQuestion = new HashSet<>();
     Timer timer;
     int playerSpeed = 10;
     int deltaX = 0;

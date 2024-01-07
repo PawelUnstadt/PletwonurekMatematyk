@@ -16,8 +16,8 @@ public class Bubble extends JPanel {
     }
 
 
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void paint(Graphics g) {
+        super.paint(g);
         if (answer != null) {
             int diameter = Math.min(getWidth(), getHeight());       //Rysowanie kształtu bąbla
             int x = (getWidth() - diameter) / 2;
