@@ -3,7 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class OknoMenu extends JFrame {
+
+public class OknoMenu extends JFrame{
 
     public OknoMenu() {
         setTitle("PŁETWONUREK MATEMATYK");
@@ -24,18 +25,39 @@ public class OknoMenu extends JFrame {
             }
         });
 
-        JButton medium = new JButton("ŚREDNI");
-        medium.setFont(new Font("Arial", Font.BOLD, 20));
-        medium.setBounds(590, 425, 175, 80);
-
         JButton easy = new JButton("ŁATWY");
         easy.setFont(new Font("Arial", Font.BOLD, 20));
         easy.setBounds(390, 425, 175, 80);
+        easy.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                OknoGry.oxygenLimit = 5;
+                JOptionPane.showMessageDialog(null, "Wybrano poziom łatwy");
+            }
+        });
+
+        JButton medium = new JButton("ŚREDNI");
+        medium.setFont(new Font("Arial", Font.BOLD, 20));
+        medium.setBounds(590, 425, 175, 80);
+        medium.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                OknoGry.oxygenLimit = 10;
+                JOptionPane.showMessageDialog(null, "Wybrano poziom średni");
+            }
+        });
 
 
         JButton hard = new JButton("TRUDNY");
         hard.setFont(new Font("Arial", Font.BOLD, 20));
         hard.setBounds(790, 425, 175, 80);
+        hard.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                OknoGry.oxygenLimit = 20;
+                JOptionPane.showMessageDialog(null, "Wybrano poziom trudny");
+            }
+        });
 
         JButton exit = new JButton("WYJDŹ Z GRY");
         exit.setFont(new Font("Arial", Font.BOLD, 20));
@@ -63,5 +85,4 @@ public class OknoMenu extends JFrame {
     public void pokazOknoMenu() {
         setVisible(true);
     }
-
 }

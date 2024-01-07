@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
-import java.lang.Math.*;
+
 
 
 public class OknoGry extends JPanel implements ActionListener{
@@ -29,6 +29,7 @@ public class OknoGry extends JPanel implements ActionListener{
     JProgressBar progressBar;
     int progressBarMaxValue = 100;
     int progressBarCurrentValue = progressBarMaxValue;
+    static int oxygenLimit = 10;
 
 
     OknoGry() {
@@ -85,7 +86,7 @@ public class OknoGry extends JPanel implements ActionListener{
         Timer progressBarTimer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                progressBarCurrentValue -= 10;
+                progressBarCurrentValue -= oxygenLimit;
 
                 if (progressBarCurrentValue <= 0) {
                     ((Timer) e.getSource()).stop();
@@ -106,7 +107,7 @@ public class OknoGry extends JPanel implements ActionListener{
             String generatedQuestion = currentQuestion.generateQuestion();
             QuestionPanel.setText(generatedQuestion + " = ?");
 
-            // Ustaw poprawną odpowiedź w losowym bąblu
+            // Ustawienie poprawnej odpowiedzi w losowym bąblu
             int correctAnswerBubbleIndex = (int) (Math.random() * 3) + 1;
             switch (correctAnswerBubbleIndex) {
                 case 1:
@@ -123,12 +124,11 @@ public class OknoGry extends JPanel implements ActionListener{
                     break;
             }
 
-            // Ustaw dwie błędne odpowiedzi w pozostałych bąblach
+            // Ustawienie błędnych odpowiedzi w pozostałych bąblach
             int incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
             int incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
 
             while (incorrectAnswer1 == incorrectAnswer2 || incorrectAnswer1 == Integer.parseInt(currentQuestion.generateAnswer()) || incorrectAnswer2 == Integer.parseInt(currentQuestion.generateAnswer())) {
-                // Unikaj powtarzających się błędnych odpowiedzi
                 incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
                 incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
             }
@@ -259,7 +259,7 @@ public class OknoGry extends JPanel implements ActionListener{
         String generatedQuestion = currentQuestion.generateQuestion();
         QuestionPanel.setText(generatedQuestion + " = ?");
 
-        // Ustaw poprawną odpowiedź w losowym bąblu
+        // Ustawienie poprawnej odpowiedzi w losowym bąblu
         int correctAnswerBubbleIndex = (int) (Math.random() * 3) + 1;
         switch (correctAnswerBubbleIndex) {
             case 1:
