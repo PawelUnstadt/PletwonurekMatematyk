@@ -4,10 +4,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+import java.util.List;
 
-
-
-public class OknoGry extends JPanel implements ActionListener{
+public class OknoGry extends JPanel implements ActionListener {
 
     JFrame frame;
     JLabel player;
@@ -20,6 +19,8 @@ public class OknoGry extends JPanel implements ActionListener{
     JLabel PointCounter;
     int points = 0;
     Question currentQuestion;
+    private List<Question> allQuestions;
+    private Set<Question> leftQuestions;
     Timer timer;
     int playerSpeed = 10;
     int deltaX = 0;
@@ -28,7 +29,6 @@ public class OknoGry extends JPanel implements ActionListener{
     int progressBarMaxValue = 100;
     int progressBarCurrentValue = progressBarMaxValue;
     static int oxygenLimit = 10;
-
 
     OknoGry() {
         frame = new JFrame("PŁETWONUREK MATEMATYK");
@@ -67,30 +67,32 @@ public class OknoGry extends JPanel implements ActionListener{
         frame.add(progressBar);
 
         bubble1 = new Bubble();
-        bubble1.setBounds(1150,375,120,120);
+        bubble1.setBounds(1150, 375, 120, 120);
         frame.add(bubble1);
 
         bubble2 = new Bubble();
-        bubble2.setBounds(1150,175,120,120);
+        bubble2.setBounds(1150, 175, 120, 120);
         frame.add(bubble2);
 
         bubble3 = new Bubble();
-        bubble3.setBounds(1150,575,120,120);
+        bubble3.setBounds(1150, 575, 120, 120);
         frame.add(bubble3);
 
+        allQuestions = new ArrayList<>();
+        leftQuestions = new HashSet<>(allQuestions);
+
         QuestionPanel = new JLabel();
-        QuestionPanel.setBounds(400,0,250,50);
-        QuestionPanel.setFont(new Font("Arial",Font.BOLD,50));
+        QuestionPanel.setBounds(400, 0, 250, 50);
+        QuestionPanel.setFont(new Font("Arial", Font.BOLD, 50));
         QuestionPanel.setForeground(Color.white);
         frame.add(QuestionPanel);
 
         PointCounter = new JLabel();
-        PointCounter.setBounds(810,0,200,50);
-        PointCounter.setFont(new Font("Arial",Font.BOLD,38));
+        PointCounter.setBounds(810, 0, 200, 50);
+        PointCounter.setFont(new Font("Arial", Font.BOLD, 38));
         PointCounter.setText("WYNIK:" + points);
         PointCounter.setForeground(Color.white);
         frame.add(PointCounter);
-
 
         timer = new Timer(16, this);
         timer.start();
@@ -110,9 +112,10 @@ public class OknoGry extends JPanel implements ActionListener{
         setupKeyBindings();
     }
 
-    public void pokazOknoGry(){
+    public void pokazOknoGry() {
         frame.setVisible(true);
     }
+
     private void showQuestion() {
         if (currentQuestion == null) {
             currentQuestion = new Question();
@@ -140,7 +143,9 @@ public class OknoGry extends JPanel implements ActionListener{
             int incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
             int incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
 
-            while (incorrectAnswer1 == incorrectAnswer2 || incorrectAnswer1 == Integer.parseInt(currentQuestion.generateAnswer()) || incorrectAnswer2 == Integer.parseInt(currentQuestion.generateAnswer())) {
+            while (incorrectAnswer1 == incorrectAnswer2
+                    || incorrectAnswer1 == Integer.parseInt(currentQuestion.generateAnswer())
+                    || incorrectAnswer2 == Integer.parseInt(currentQuestion.generateAnswer())) {
                 incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
                 incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
             }
@@ -164,12 +169,11 @@ public class OknoGry extends JPanel implements ActionListener{
 
     private int generateIncorrectAnswer(int correctAnswer) {
         Random random = new Random();
-        int randomize = random.nextInt(correctAnswer) + 1;           // Zakres generowanych błędnych odpowiedzi
+        int randomize = random.nextInt(correctAnswer) + 1; // Zakres generowanych błędnych odpowiedzi
         return correctAnswer + randomize;
     }
 
-
-    private void updatePlayerPosition() {                           //Metoda aktualizuje pozycję gracza na planszy
+    private void updatePlayerPosition() { // Aktualizacja pozycji gracza na planszy
         int newX = player.getX() + deltaX;
         int newY = player.getY() + deltaY;
 
@@ -214,7 +218,7 @@ public class OknoGry extends JPanel implements ActionListener{
         }
     }
 
-    private void collisionCheck(Bubble bubble){
+    private void collisionCheck(Bubble bubble) {
         if (bubble == correctAnswerBubble) {
             nextStage();
             progressBarCurrentValue = 100;
@@ -226,13 +230,12 @@ public class OknoGry extends JPanel implements ActionListener{
         }
     }
 
-
     private void updateProgressBar() {
         progressBar.setValue(progressBarCurrentValue);
     }
 
     private void showGameOverDialog() {
-        Object[] options = {"WRÓĆ DO MENU"};
+        Object[] options = { "WRÓĆ DO MENU" };
         int choice = JOptionPane.showOptionDialog(frame,
                 "NIESTETY PRZEGRAŁEŚ :(",
                 "KONIEC GRY",
@@ -249,24 +252,25 @@ public class OknoGry extends JPanel implements ActionListener{
         }
     }
 
-    private void showGameWonDialog(){
-            Object[] options = {"WRÓĆ DO MENU"};
-            int choice = JOptionPane.showOptionDialog(frame,
-                    "GRATULACJE, WYGRAŁEŚ :)",
-                    "KONIEC GRY",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    null,
-                    options,
-                    options[0]);
+    private void showGameWonDialog() {
+        Object[] options = { "WRÓĆ DO MENU" };
+        int choice = JOptionPane.showOptionDialog(frame,
+                "GRATULACJE, WYGRAŁEŚ :)",
+                "KONIEC GRY",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                options,
+                options[0]);
 
-            if (choice == 0) {
-                frame.dispose();
-                OknoMenu oknoMenu = new OknoMenu();
-                oknoMenu.pokazOknoMenu();
-            }
+        if (choice == 0) {
+            frame.dispose();
+            OknoMenu oknoMenu = new OknoMenu();
+            oknoMenu.pokazOknoMenu();
+        }
     }
-    private void nextStage(){
+
+    private void nextStage() {
         currentQuestion = new Question();
         String generatedQuestion = currentQuestion.generateQuestion();
         QuestionPanel.setText(generatedQuestion + " = ?");
@@ -288,11 +292,18 @@ public class OknoGry extends JPanel implements ActionListener{
                 break;
         }
 
-
-        int incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));         // Ustawienie błędnych odpowiedzi w pozostałych bąblach
+        int incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer())); // Ustawienie
+                                                                                                            // błędnych
+                                                                                                            // odpowiedzi
+                                                                                                            // w
+                                                                                                            // pozostałych
+                                                                                                            // bąblach
         int incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
-                                                                                                                    // Pętla while, która nie pozwala na wylosowanie dwóch tych samych błędnych odpowiedzi
-        while (incorrectAnswer1 == incorrectAnswer2 || incorrectAnswer1 == Integer.parseInt(currentQuestion.generateAnswer()) || incorrectAnswer2 == Integer.parseInt(currentQuestion.generateAnswer())) {
+        // Pętla while, która nie pozwala na wylosowanie dwóch tych samych błędnych
+        // odpowiedzi
+        while (incorrectAnswer1 == incorrectAnswer2
+                || incorrectAnswer1 == Integer.parseInt(currentQuestion.generateAnswer())
+                || incorrectAnswer2 == Integer.parseInt(currentQuestion.generateAnswer())) {
 
             incorrectAnswer1 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
             incorrectAnswer2 = generateIncorrectAnswer(Integer.parseInt(currentQuestion.generateAnswer()));
@@ -313,12 +324,11 @@ public class OknoGry extends JPanel implements ActionListener{
                 break;
         }
 
-
-
-        bubble1.setLocation(1000, 375);                                 // Ustawienie bąbli na swoje początkowe położenie
+        bubble1.setLocation(1000, 375); // Ustawienie bąbli na swoje początkowe położenie
         bubble2.setLocation(1000, 175);
         bubble3.setLocation(1000, 575);
     }
+
     private void setupKeyBindings() {
         InputMap inputMap = player.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = player.getActionMap();
@@ -396,7 +406,7 @@ public class OknoGry extends JPanel implements ActionListener{
             showGameOverDialog();
             timer.stop();
         }
-        if(points == 20){
+        if (points == 20) {
             showGameWonDialog();
             timer.stop();
         }
