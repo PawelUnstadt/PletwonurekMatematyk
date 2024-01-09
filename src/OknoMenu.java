@@ -29,7 +29,7 @@ public class OknoMenu extends JFrame{
         easy.setFont(new Font("Arial", Font.BOLD, 20));
         easy.setBounds(390, 425, 175, 80);
         easy.addActionListener(new ActionListener() {
-            @Override
+            @Override                                   //Zmiana limitu tlenu po wciśnięciu przycisku easy, analogiczne działanie w przypadku medium i hard
             public void actionPerformed(ActionEvent e) {
                 OknoGry.oxygenLimit = 5;
                 JOptionPane.showMessageDialog(null, "Wybrano poziom łatwy");
