@@ -46,6 +46,7 @@ public class OknoGry extends JPanel implements ActionListener{
         close.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                timer.stop();
                 frame.dispose();
                 OknoMenu oknoMenu = new OknoMenu();
                 oknoMenu.pokazOknoMenu();
